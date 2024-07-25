@@ -1,0 +1,8 @@
+email,isMentor,preferences
+test@test.com, 1,Cardiology,Heme-Onc,GI
+test6@test.com, 0,Cardiology,Heme-Onc,GI
+test8@test.com, 0,GI,Cardiology,Heme-Onc
+test2@test.com, 0,Heme-Onc,GI
+test3@test.com, 0,ID,GI,Cardiology
+test4@test.com, 0,Genetics,GI,Cardiology
+test5@test.com, 0,Rheumatology,Endocrine,ID
