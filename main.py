@@ -7,7 +7,8 @@ from matching_objects.Match import MentorMatch
 
 def main(filename):
     data = FileReader().build(filename)
-    MentorMatch().match(data["mentors"],data["mentees"])
+    man = MentorMatch().match(data["mentors"],data["mentees"])
+    print(man)
 
 
 if __name__ =="__main__":

@@ -28,13 +28,14 @@ class MentorMatch:
         while i < self.MAX_PREFERENCES:
             for m in missing:
                 if len(m.order_preferences) > i +1:
-                    mentors = matrix[m.order_preferences[i]][m.order_preferences[i+1]]
+                    # Create a list of mentors with same speciality interests. First part of list will include those with the same first and
+                    #  second order preference as mentee, end of list will include those with switched mentor mentee interests
+                    me = matrix[m.order_preferences[i]][m.order_preferences[i+1]] + matrix[m.order_preferences[i+1]][m.order_preferences[i]]
                 else:
                     # We don't have enough options so we will have to manually do this,
                     #  or do it randomly
-                    mentors = []
-                mentor_missing = self.do_match(m,mentors)
-
+                    me = []
+                mentor_missing = self.do_match(m,me)
                 # There is a possiblity that there are no matches for this mentee
                 #  based on thier first choice. In this case, we will add them to a list
                 #  and try again with their second or third choice
@@ -43,13 +44,46 @@ class MentorMatch:
             missing = temp
             temp = []
             i = i + 1
-        [print(m) for m in missing]
+
+        # Check to see the ratio of missing mentees
+        print(f"{len(missing)/len(mentees)}% mentees unmatched after first pass. Will put remaining mentees with available mentors.")
+
+        # Now for each of the remaining mentees, we have to put them with a proper mentor. We'll have to do this iteratively for now.
+        #  This is O(n^2) approach which is very bad... but i have other things to do unfortuntely
+        manual_review = []
+        for m in missing:
+            unmatched = True
+            for pref in m.order_preferences:
+                mentor_hash = matrix[pref]
+                for key in mentor_hash.keys():
+                    if unmatched:
+                        me = mentor_hash[key]
+                        unmatched = self.do_match(m,me)
+            if unmatched:
+                manual_review.append(m)
+
+        print(f"{len(manual_review)/len(mentees)}% mentees unmatched. Will need to be manually reviewed.")
+        self.build_output_files(mentors)
+        return manual_review
+
+
+
+    def build_output_files(self,mentors):
+        f = open("outfile.csv","w")
+        f.write("Mentor,Mentee\n")
+        for m in mentors:
+            for men in m.mentee_list:
+                f.write(f"{m.email},{men.email}\n")
+        f.close()
+
+
 
     def do_match(self,mentee,mentors):
         mentor_missing = True
+
         for mz in mentors:
             if len(mz.mentee_list) < self.MAX_MENTEES and mentor_missing:
-                mz.mentee_list = mz.mentee_list.append(mentee)
+                mz.mentee_list.append(mentee)
                 mentor_missing = False
         return mentor_missing
 
